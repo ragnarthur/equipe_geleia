@@ -1,0 +1,127 @@
+﻿{% extends "layout.html" %}
+
+{% block title %}Lista de Alunos{% endblock %}
+
+{% block content %}
+  <h1 class="mb-4">Lista de Alunos</h1>
+
+  <!-- Abas para as categorias -->
+  <ul class="nav nav-tabs" id="alunosTab" role="tablist">
+    <li class="nav-item" role="presentation">
+      <button class="nav-link active tab-infantil" id="infantil-tab" data-bs-toggle="tab" data-bs-target="#infantil" type="button" role="tab" aria-controls="infantil" aria-selected="true">Infantil</button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link tab-adulto" id="adulto-tab" data-bs-toggle="tab" data-bs-target="#adulto" type="button" role="tab" aria-controls="adulto" aria-selected="false">Adulto</button>
+    </li>
+  </ul>
+  
+  <div class="tab-content" id="alunosTabContent">
+    <!-- Aba Infantil -->
+    <div class="tab-pane fade show active" id="infantil" role="tabpanel" aria-labelledby="infantil-tab">
+      <table class="table table-striped mt-3">
+        <thead>
+          <tr>
+            <th>Nome</th>
+            <th>Categoria</th>
+            <th>Idade</th>
+            <th>Faixa</th>
+            <th>Email</th>
+            <th>Data de Início</th>
+            <th>Próximo Pagamento</th>
+            <th>Status</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for aluno in alunos_infantil %}
+          <tr>
+            <td>{{ aluno.nome }}</td>
+            <td>{{ aluno.categoria }}</td>
+            <td>{{ aluno.idade }}</td>
+            <td>
+              <div class="faixa-square" style="background-color: {{ aluno.faixa_cor|faixa_color }};"></div>
+              {{ aluno.faixa_cor }} ({{ aluno.faixa_grau }})
+            </td>
+            <td>{{ aluno.email }}</td>
+            <td>{{ aluno.data_entrada.strftime('%d/%m/%Y') }}</td>
+            <td>{{ aluno.proximo_pagamento.strftime('%d/%m/%Y') }}</td>
+            <td>{{ aluno.status_mensalidade }}</td>
+            <td>
+              <!-- Dropdown de Ações -->
+              <div class="dropdown">
+                <button class="btn btn-sm dropdown-toggle dropdown-acao" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  Ações
+                </button>
+                <ul class="dropdown-menu">
+                  <li>
+                    <a class="dropdown-item" href="{{ url_for('editar_aluno', aluno_id=aluno.id) }}">Editar</a>
+                  </li>
+                  <li>
+                    <form action="{{ url_for('deletar_aluno', aluno_id=aluno.id) }}" method="post" onsubmit="return confirm('Tem certeza que deseja deletar este aluno?');">
+                      <button class="dropdown-item text-danger" type="submit">Excluir</button>
+                    </form>
+                  </li>
+                </ul>
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Aba Adulto -->
+    <div class="tab-pane fade" id="adulto" role="tabpanel" aria-labelledby="adulto-tab">
+      <table class="table table-striped mt-3">
+        <thead>
+          <tr>
+            <th>Nome</th>
+            <th>Categoria</th>
+            <th>Idade</th>
+            <th>Faixa</th>
+            <th>Email</th>
+            <th>Data de Início</th>
+            <th>Próximo Pagamento</th>
+            <th>Status</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for aluno in alunos_adulto %}
+          <tr>
+            <td>{{ aluno.nome }}</td>
+            <td>{{ aluno.categoria }}</td>
+            <td>{{ aluno.idade }}</td>
+            <td>
+              <div class="faixa-square" style="background-color: {{ aluno.faixa_cor|faixa_color }};"></div>
+              {{ aluno.faixa_cor }} ({{ aluno.faixa_grau }})
+            </td>
+            <td>{{ aluno.email }}</td>
+            <td>{{ aluno.data_entrada.strftime('%d/%m/%Y') }}</td>
+            <td>{{ aluno.proximo_pagamento.strftime('%d/%m/%Y') }}</td>
+            <td>{{ aluno.status_mensalidade }}</td>
+            <td>
+              <!-- Dropdown de Ações -->
+              <div class="dropdown">
+                <button class="btn btn-sm dropdown-toggle dropdown-acao" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  Ações
+                </button>
+                <ul class="dropdown-menu">
+                  <li>
+                    <a class="dropdown-item" href="{{ url_for('editar_aluno', aluno_id=aluno.id) }}">Editar</a>
+                  </li>
+                  <li>
+                    <form action="{{ url_for('deletar_aluno', aluno_id=aluno.id) }}" method="post" onsubmit="return confirm('Tem certeza que deseja deletar este aluno?');">
+                      <button class="dropdown-item text-danger" type="submit">Excluir</button>
+                    </form>
+                  </li>
+                </ul>
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+{% endblock %}

@@ -1,0 +1,303 @@
+﻿/* =========================
+   Global Settings and Fonts
+   ========================= */
+
+/* Importa a fonte Roboto do Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+
+/* Corpo do aplicativo em tom cinza claro (#eeeeee), texto principal em preto (#333). */
+body {
+    font-family: 'Roboto', sans-serif;
+    background-color: #eeeeee; /* Fundo cinza claro */
+    color: #333333;            /* Texto preto */
+    margin: 0;
+    padding: 0;
+}
+
+/* =========================
+   Navbar Styling
+   ========================= */
+
+/* Navbar preta com risca vermelha na parte de baixo */
+.navbar {
+    background-color: #000000 !important; /* Fundo preto */
+    border-bottom: 5px solid #ff0000;       /* Risca vermelha */
+    box-shadow: none;
+}
+
+/* Texto e links em branco, hover vermelho claro */
+.navbar-brand, .nav-link {
+    color: #ffffff !important;
+    transition: color 0.3s ease;
+}
+
+/* Aumentamos a altura do logo para dar mais destaque */
+.logo-navbar {
+    height: 125px;  /* Ajuste conforme desejar */
+    margin-right: 30px;
+}
+
+/* Aumentamos o tamanho do texto "Equipe Geléia" */
+.navbar-brand {
+    font-size: 3rem;  /* Tamanho maior para mais destaque */
+}
+
+/* Aumentamos a fonte dos links da navbar */
+.nav-link {
+    font-size: 1.4rem;  /* Ajuste conforme desejar */
+}
+
+/* Efeito hover nos links */
+.nav-link:hover {
+    color: #ff6666 !important;
+}
+
+/* =========================
+   Container and Layout
+   ========================= */
+
+/*
+   Ajustamos o container para ter uma largura máxima de 1400px,
+   ocupando 95% da tela e ficando centralizado.
+*/
+.container {
+    max-width: 1400px !important; 
+    width: 95%; 
+    margin: 0 auto; 
+    padding-top: 30px;
+    padding-bottom: 30px;
+}
+
+/* =========================
+   Table Styling
+   ========================= */
+
+/*
+   Tabelas em fundo branco (#fff), texto preto (#333),
+   cabeçalho preto (#000) com texto branco, borda inferior vermelha.
+   Aumentamos o tamanho da fonte para melhor legibilidade dos dados.
+*/
+.table {
+    background-color: #ffffff; /* Fundo da tabela */
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+.table thead th {
+    background-color: #000000; /* Cabeçalho preto */
+    color: #ffffff;
+    font-weight: 700;
+    padding: 12px;
+    border-bottom: 2px solid #ff0000; /* Linha inferior vermelha no thead */
+    font-size: 1.4rem; /* Aumenta o tamanho da fonte no cabeçalho */
+}
+.table tbody td {
+    padding: 12px;
+    color: #333333;
+    font-size: 1.4rem; /* Aumenta o tamanho da fonte nos dados */
+}
+/* Linhas listradas em #f9f9f9 */
+.table-striped tbody tr:nth-of-type(odd) {
+    background-color: #f9f9f9;
+}
+
+/* Força os botões e formulários dentro das células da tabela a ficarem lado a lado */
+.table td a.btn,
+.table td form {
+    display: inline-block;
+    vertical-align: middle;
+    white-space: nowrap;
+    margin-right: 5px;
+}
+
+/* =========================
+   Buttons Styling
+   ========================= */
+
+/* Botão primário: fundo preto, texto branco, hover vermelho */
+.btn-primary {
+    background-color: #000000;
+    border-color: #000000;
+    color: #ffffff;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+.btn-primary:hover {
+    background-color: #ff0000;
+    border-color: #ff0000;
+}
+
+/* Botão de perigo (deletar) */
+.btn-danger {
+    background-color: #e53935;
+    border-color: #e53935;
+    color: #ffffff;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+.btn-danger:hover {
+    background-color: #d32f2f;
+    border-color: #c62828;
+}
+
+/* Botão de sucesso: fundo preto, hover vermelho */
+.btn-success {
+    background-color: #000000;
+    border-color: #000000;
+    color: #ffffff;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+.btn-success:hover {
+    background-color: #ff0000;
+    border-color: #ff0000;
+}
+
+/* =========================
+   Form Styling
+   ========================= */
+
+/*
+   Campos de formulário em branco (#fff),
+   borda #ccc, texto #333.
+   Foco com borda vermelha.
+*/
+.form-control {
+    border-radius: 4px;
+    box-shadow: none;
+    background-color: #ffffff;
+    color: #333333;
+    border: 1px solid #cccccc;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+.form-control:focus {
+    border-color: #ff0000;
+    box-shadow: 0 0 0 0.2rem rgba(255, 0, 0, 0.25);
+}
+.form-label {
+    font-weight: 700;
+    color: #333333;
+}
+
+/* =========================
+   Alerts and Spacing
+   ========================= */
+
+/* Alertas em fundo branco, texto preto */
+.alert {
+    background-color: #ffffff;
+    color: #333333;
+    border-radius: 4px;
+    border: 1px solid #cccccc;
+}
+.mt-1 { margin-top: 0.25rem !important; }
+.mb-1 { margin-bottom: 0.25rem !important; }
+
+/* =========================
+   Tabs Styling (para as listas de alunos)
+   ========================= */
+
+.nav-tabs .tab-infantil,
+.nav-tabs .tab-adulto {
+    background-color: #000000;
+    color: #ffffff;
+    border: 1px solid #ff0000;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+.nav-tabs .nav-link.active {
+    background-color: #ff0000 !important;
+    color: #ffffff !important;
+}
+.nav-tabs .nav-link:hover {
+    opacity: 0.9;
+}
+
+/* =========================
+   Faixa Color Square
+   ========================= */
+
+.faixa-square {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 1px solid #ff0000;
+    margin-right: 5px;
+    vertical-align: middle;
+}
+
+/* =========================
+   Home Page Styling
+   ========================= */
+
+/*
+   A configuração das imagens de background será controlada
+   diretamente nos arquivos HTML (ex: home.html).
+   Aqui mantemos apenas a estrutura de layout para a home-page.
+*/
+.home-page {
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.home-title {
+    color: #ffffff;
+    font-size: 2.5rem;
+    text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.7);
+    margin-bottom: 20px;
+}
+
+.home-buttons {
+    display: flex;
+    gap: 20px;
+}
+
+.home-buttons a {
+    background-color: #000000;
+    color: #ffffff;
+    padding: 12px 24px;
+    border-radius: 4px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+}
+.home-buttons a:hover {
+    background-color: #ff0000;
+}
+
+/* =========================
+   Dropdown "Ações" Styling
+   ========================= */
+
+/* Botão do dropdown no estilo "faixa preta" */
+.dropdown-acao {
+    background-color: #000000; /* Fundo preto */
+    border-color: #000000;
+    color: #ffffff;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+.dropdown-acao:hover {
+    background-color: #ff0000; /* Hover vermelho */
+    border-color: #ff0000;
+    color: #ffffff;
+}
+
+/* Itens do dropdown: fundo branco, texto escuro */
+.dropdown-menu {
+    background-color: #ffffff;
+    border: 1px solid #cccccc;
+}
+
+/* Links dentro do dropdown: texto preto, hover cinza */
+.dropdown-item {
+    color: #333333;
+    transition: background-color 0.3s ease;
+}
+.dropdown-item:hover {
+    background-color: #f2f2f2;
+}
+
+/* Item de exclusão em vermelho */
+.dropdown-item.text-danger {
+    color: #e53935 !important;
+}
