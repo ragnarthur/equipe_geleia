@@ -30,7 +30,7 @@ def get_color_code(faixa_cor):
 
 app.jinja_env.filters['faixa_color'] = get_color_code
 
-# Modelo de dados atualizado
+# Modelo de dados
 class Aluno(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     nome = db.Column(db.String(100), nullable=False)
@@ -39,8 +39,8 @@ class Aluno(db.Model):
     faixa_cor = db.Column(db.String(50), nullable=False)
     faixa_grau = db.Column(db.String(50), nullable=False)
     email = db.Column(db.String(120), nullable=True)
-    data_entrada = db.Column(db.Date, nullable=False)    # Data de entrada na academia
-    data_pagamento = db.Column(db.Date, nullable=False)    # Data do último pagamento
+    data_entrada = db.Column(db.Date, nullable=False)   # Data de entrada na academia
+    data_pagamento = db.Column(db.Date, nullable=False) # Data do último pagamento
 
     def __repr__(self):
         return f"<Aluno {self.nome}>"
@@ -85,17 +85,17 @@ def criar_aluno():
         try:
             idade = int(idade)
         except ValueError:
-            flash("Idade inválida. Informe um número inteiro.")
+            flash("Idade inválida. Informe um número inteiro.", "danger")
             return redirect(url_for('criar_aluno'))
         try:
             data_entrada = datetime.strptime(data_entrada_str, '%d/%m/%Y').date()
         except ValueError:
-            flash("Data de entrada inválida. Use o formato dd/mm/aaaa.")
+            flash("Data de entrada inválida. Use o formato dd/mm/aaaa.", "danger")
             return redirect(url_for('criar_aluno'))
         try:
             data_pagamento = datetime.strptime(data_pagamento_str, '%d/%m/%Y').date()
         except ValueError:
-            flash("Data de pagamento inválida. Use o formato dd/mm/aaaa.")
+            flash("Data de pagamento inválida. Use o formato dd/mm/aaaa.", "danger")
             return redirect(url_for('criar_aluno'))
 
         novo_aluno = Aluno(
@@ -110,7 +110,7 @@ def criar_aluno():
         )
         db.session.add(novo_aluno)
         db.session.commit()
-        flash("Aluno criado com sucesso!")
+        flash("Aluno criado com sucesso!", "success")
         return redirect(url_for('listar_alunos'))
     return render_template('aluno_form.html', aluno=None)
 
@@ -123,7 +123,7 @@ def editar_aluno(aluno_id):
         try:
             aluno.idade = int(request.form.get('idade'))
         except ValueError:
-            flash("Idade inválida. Informe um número inteiro.")
+            flash("Idade inválida. Informe um número inteiro.", "danger")
             return redirect(url_for('editar_aluno', aluno_id=aluno_id))
         aluno.faixa_cor = request.form.get('faixa_cor')
         aluno.faixa_grau = request.form.get('faixa_grau')
@@ -133,15 +133,15 @@ def editar_aluno(aluno_id):
         try:
             aluno.data_entrada = datetime.strptime(data_entrada_str, '%d/%m/%Y').date()
         except ValueError:
-            flash("Data de entrada inválida. Use o formato dd/mm/aaaa.")
+            flash("Data de entrada inválida. Use o formato dd/mm/aaaa.", "danger")
             return redirect(url_for('editar_aluno', aluno_id=aluno_id))
         try:
             aluno.data_pagamento = datetime.strptime(data_pagamento_str, '%d/%m/%Y').date()
         except ValueError:
-            flash("Data de pagamento inválida. Use o formato dd/mm/aaaa.")
+            flash("Data de pagamento inválida. Use o formato dd/mm/aaaa.", "danger")
             return redirect(url_for('editar_aluno', aluno_id=aluno_id))
         db.session.commit()
-        flash("Aluno atualizado com sucesso!")
+        flash("Aluno atualizado com sucesso!", "success")
         return redirect(url_for('listar_alunos'))
     return render_template('aluno_form.html', aluno=aluno)
 
@@ -150,10 +150,63 @@ def deletar_aluno(aluno_id):
     aluno = Aluno.query.get_or_404(aluno_id)
     db.session.delete(aluno)
     db.session.commit()
-    flash("Aluno deletado com sucesso!")
+    flash("Aluno deletado com sucesso!", "success")
     return redirect(url_for('listar_alunos'))
 
-# Função para simular a cobrança mensal (atualiza data_pagamento se necessário)
+@app.route('/alunos/<int:aluno_id>/pagar', methods=['POST'])
+def pagar_mensalidade(aluno_id):
+    aluno = Aluno.query.get_or_404(aluno_id)
+    aluno.data_pagamento = datetime.today().date()
+    db.session.commit()
+    flash(f"Mensalidade paga com sucesso para <strong>{aluno.nome}</strong>!", "success")
+    return redirect(url_for('listar_alunos'))
+
+# Rota Mensalidades - Dashboard Financeiro
+@app.route('/mensalidades')
+def mensalidades():
+    """Exibe um resumo financeiro das mensalidades, usando dados reais do banco."""
+    total_adultos = Aluno.query.filter_by(categoria="adulto").count()
+    total_infantil = Aluno.query.filter_by(categoria="infantil").count()
+
+    valor_adulto = 120
+    valor_infantil = 100
+
+    receita_total = (total_adultos * valor_adulto) + (total_infantil * valor_infantil)
+    dist_categoria = [total_adultos, total_infantil]
+
+    # Calcula a receita mensal real com base na data de pagamento
+    monthly_revenue = {m: 0 for m in range(1, 13)}
+    # Calcula o status mensal (quantos pagamentos "Em dia" e "Atrasado" por mês)
+    monthly_status = {m: {"Em dia": 0, "Atrasado": 0} for m in range(1, 13)}
+    for aluno in Aluno.query.all():
+        mes_pg = aluno.data_pagamento.month
+        if aluno.categoria == "adulto":
+            monthly_revenue[mes_pg] += valor_adulto
+        else:
+            monthly_revenue[mes_pg] += valor_infantil
+        monthly_status[mes_pg][aluno.status_mensalidade] += 1
+
+    # Status geral dos pagamentos
+    status_counts = {"Em dia": 0, "Atrasado": 0}
+    for aluno in Aluno.query.all():
+        status_counts[aluno.status_mensalidade] += 1
+
+    meses_labels = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun",
+                    "Jul", "Ago", "Set", "Out", "Nov", "Dez"]
+    data_values = [monthly_revenue[m] for m in range(1, 13)]
+
+    return render_template("mensalidades.html",
+                           total_adultos=total_adultos,
+                           total_infantil=total_infantil,
+                           receita_total=receita_total,
+                           dist_categoria=dist_categoria,
+                           meses_labels=meses_labels,
+                           data_values=data_values,
+                           valor_adulto=valor_adulto,
+                           valor_infantil=valor_infantil,
+                           status_counts=status_counts,
+                           monthly_status=monthly_status)
+
 def cobrar_mensalidade():
     hoje = datetime.today().date()
     alunos = Aluno.query.all()

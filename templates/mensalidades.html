@@ -1,0 +1,185 @@
+﻿{% extends "layout.html" %}
+{% block title %}Mensalidades - Resumo Financeiro{% endblock %}
+
+{% block content %}
+  <h1 class="mb-4">Resumo Financeiro - Mensalidades</h1>
+  
+  <!-- Resumo em Cartões -->
+  <div class="row">
+    <!-- Cartão para Adultos -->
+    <div class="col-md-4">
+      <div class="card text-center mb-4">
+        <div class="card-body">
+          <h5 class="card-title">Total de Adultos</h5>
+          <p class="card-text display-4">{{ total_adultos }}</p>
+          <p class="card-text">Mensalidade: R$ {{ valor_adulto }}</p>
+        </div>
+      </div>
+    </div>
+    <!-- Cartão para Crianças -->
+    <div class="col-md-4">
+      <div class="card text-center mb-4">
+        <div class="card-body">
+          <h5 class="card-title">Total de Crianças</h5>
+          <p class="card-text display-4">{{ total_infantil }}</p>
+          <p class="card-text">Mensalidade: R$ {{ valor_infantil }}</p>
+        </div>
+      </div>
+    </div>
+    <!-- Cartão Receita Total -->
+    <div class="col-md-4">
+      <div class="card text-center mb-4">
+        <div class="card-body">
+          <h5 class="card-title">Receita Total</h5>
+          <p class="card-text display-4">R$ {{ receita_total }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Gráfico de Pizza: Distribuição de Alunos -->
+  <div class="card mb-4">
+    <div class="card-header">
+      Distribuição de Alunos
+    </div>
+    <div class="card-body">
+      <div id="categoriaChart" style="width: 100%; height: 400px;"></div>
+    </div>
+  </div>
+  
+  <!-- Gráfico de Pizza: Status de Pagamento -->
+  <div class="card mb-4">
+    <div class="card-header">
+      Status de Pagamento
+    </div>
+    <div class="card-body">
+      <div id="statusChart" style="width: 100%; height: 400px;"></div>
+    </div>
+  </div>
+
+  <!-- Gráfico de Barras: Receita por Mês -->
+  <div class="card mb-4">
+    <div class="card-header">
+      Receita Mensal (Baseada em data_pagamento)
+    </div>
+    <div class="card-body">
+      <div id="receitaChart" style="width: 100%; height: 400px;"></div>
+    </div>
+  </div>
+  
+  <!-- Tabela Detalhada de Pagamentos -->
+  <div class="card mb-4">
+    <div class="card-header">
+      Detalhamento Mensal dos Pagamentos
+    </div>
+    <div class="card-body">
+      <table class="table table-bordered">
+        <thead>
+          <tr>
+            <th>Mês</th>
+            <th>Em Dia</th>
+            <th>Atrasado</th>
+            <th>Total Alunos</th>
+            <th>Inadimplência (%)</th>
+            <th>Receita (R$)</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for i in range(0, 12) %}
+            {% set em_dia = monthly_status[i+1]['Em dia'] %}
+            {% set atrasado = monthly_status[i+1]['Atrasado'] %}
+            {% set total_alunos_mes = em_dia + atrasado %}
+            {% if total_alunos_mes > 0 %}
+              {% set inad_percent = (atrasado / total_alunos_mes) * 100 %}
+            {% else %}
+              {% set inad_percent = 0 %}
+            {% endif %}
+            <tr>
+              <td>{{ meses_labels[i] }}</td>
+              <td>{{ em_dia }}</td>
+              <td>{{ atrasado }}</td>
+              <td>{{ total_alunos_mes }}</td>
+              <td>{{ inad_percent|round(2) }}%</td>
+              <td>{{ data_values[i] }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+{% endblock %}
+
+{% block scripts %}
+  <!-- Google Charts Loader -->
+  <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+  <script type="text/javascript">
+    // Carrega o pacote "corechart"
+    google.charts.load('current', {'packages':['corechart']});
+    
+    // Define callbacks para desenhar os gráficos
+    google.charts.setOnLoadCallback(drawCategoriaChart);
+    google.charts.setOnLoadCallback(drawStatusChart);
+    google.charts.setOnLoadCallback(drawReceitaChart);
+
+    // ======= Gráfico de Pizza: Distribuição de Alunos (Adultos vs. Infantil) =======
+    function drawCategoriaChart() {
+      var data = new google.visualization.DataTable();
+      data.addColumn('string', 'Categoria');
+      data.addColumn('number', 'Quantidade');
+      data.addRows([
+        ['Adultos', {{ dist_categoria[0] }}],
+        ['Infantil', {{ dist_categoria[1] }}]
+      ]);
+      var options = {
+        title: 'Distribuição de Alunos',
+        is3D: true,
+        chartArea: { width: '90%', height: '80%' },
+        colors: ['#000000', '#ff0000']  // Preto e vermelho
+      };
+      var chart = new google.visualization.PieChart(document.getElementById('categoriaChart'));
+      chart.draw(data, options);
+    }
+
+    // ======= Gráfico de Pizza: Status de Pagamento (Em Dia vs. Atrasado) =======
+    function drawStatusChart() {
+      var data = new google.visualization.DataTable();
+      data.addColumn('string', 'Status');
+      data.addColumn('number', 'Quantidade');
+      data.addRows([
+        ['Em dia', {{ status_counts["Em dia"] }}],
+        ['Atrasado', {{ status_counts["Atrasado"] }}]
+      ]);
+      var options = {
+        title: 'Status de Pagamento',
+        is3D: true,
+        chartArea: { width: '90%', height: '80%' },
+        colors: ['#000000', '#ff0000']  // Preto e vermelho
+      };
+      var chart = new google.visualization.PieChart(document.getElementById('statusChart'));
+      chart.draw(data, options);
+    }
+
+    // ======= Gráfico de Barras: Receita por Mês =======
+    function drawReceitaChart() {
+      var data = new google.visualization.DataTable();
+      data.addColumn('string', 'Mês');
+      data.addColumn('number', 'Receita');
+      var meses = {{ meses_labels|tojson }};
+      var valores = {{ data_values|tojson }};
+      var rows = [];
+      for (var i = 0; i < meses.length; i++) {
+        rows.push([meses[i], valores[i]]);
+      }
+      data.addRows(rows);
+      var options = {
+        title: 'Receita Mensal (R$)',
+        legend: { position: 'none' },
+        vAxis: { minValue: 0 },
+        chartArea: { width: '80%', height: '70%' },
+        colors: ['#000000']  // Colunas em preto
+      };
+      var chart = new google.visualization.ColumnChart(document.getElementById('receitaChart'));
+      chart.draw(data, options);
+    }
+  </script>
+{% endblock %}
