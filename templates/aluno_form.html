@@ -5,46 +5,156 @@
 {% endblock %}
 
 {% block content %}
-  <h1 class="mb-4">
-    {% if aluno %}Editar Aluno{% else %}Cadastrar Novo Aluno{% endif %}
-  </h1>
+<h1 class="mb-4">
+  {% if aluno %}Editar Aluno{% else %}Cadastrar Novo Aluno{% endif %}
+</h1>
+
+<!-- Container customizado para o formulário -->
+<div class="form-container">
   <form method="post">
-    <div class="mb-3">
-      <label for="nome" class="form-label">Nome</label>
-      <input type="text" class="form-control" id="nome" name="nome" value="{{ aluno.nome if aluno else '' }}" required>
+    <div class="row">
+      <!-- Coluna 1 -->
+      <div class="col-md-6">
+        <!-- Nome -->
+        <div class="mb-3">
+          <label for="nome" class="form-label">Nome</label>
+          <input 
+            type="text" 
+            class="form-control" 
+            id="nome" 
+            name="nome" 
+            placeholder="Ex: João da Silva"
+            value="{{ aluno.nome if aluno else '' }}" 
+            required
+          >
+        </div>
+        <!-- Categoria -->
+        <div class="mb-3">
+          <label for="categoria" class="form-label">Categoria</label>
+          <select class="form-select" id="categoria" name="categoria" required>
+            <option value="infantil" {% if aluno and aluno.categoria == 'infantil' %}selected{% endif %}>Infantil</option>
+            <option value="adulto" {% if aluno and aluno.categoria == 'adulto' %}selected{% endif %}>Adulto</option>
+          </select>
+        </div>
+        <!-- Idade -->
+        <div class="mb-3">
+          <label for="idade" class="form-label">Idade</label>
+          <input 
+            type="number" 
+            class="form-control" 
+            id="idade" 
+            name="idade" 
+            placeholder="Ex: 25"
+            value="{{ aluno.idade if aluno else '' }}" 
+            required
+          >
+        </div>
+        <!-- Email -->
+        <div class="mb-3">
+          <label for="email" class="form-label">Email</label>
+          <input 
+            type="email" 
+            class="form-control" 
+            id="email" 
+            name="email" 
+            placeholder="exemplo@dominio.com"
+            value="{{ aluno.email if aluno else '' }}"
+          >
+        </div>
+      </div> <!-- Fim da coluna 1 -->
+
+      <!-- Coluna 2 -->
+      <div class="col-md-6">
+        <!-- Faixa Cor -->
+        <div class="mb-3">
+          <label for="faixa_cor" class="form-label">Cor da Faixa</label>
+          <input 
+            type="text" 
+            class="form-control" 
+            id="faixa_cor" 
+            name="faixa_cor" 
+            placeholder="Ex: Branca, Azul..."
+            value="{{ aluno.faixa_cor if aluno else '' }}" 
+            required
+          >
+        </div>
+        <!-- Faixa Grau -->
+        <div class="mb-3">
+          <label for="faixa_grau" class="form-label">Grau da Faixa</label>
+          <select class="form-select" id="faixa_grau" name="faixa_grau" required>
+            <option value="1º Grau" {% if aluno and aluno.faixa_grau == '1º Grau' %}selected{% endif %}>1º Grau</option>
+            <option value="2º Grau" {% if aluno and aluno.faixa_grau == '2º Grau' %}selected{% endif %}>2º Grau</option>
+            <option value="3º Grau" {% if aluno and aluno.faixa_grau == '3º Grau' %}selected{% endif %}>3º Grau</option>
+            <option value="4º Grau" {% if aluno and aluno.faixa_grau == '4º Grau' %}selected{% endif %}>4º Grau</option>
+          </select>
+        </div>
+        <!-- Data de Entrada -->
+        <div class="mb-3">
+          <label for="data_entrada" class="form-label">Data de Entrada</label>
+          <input 
+            type="text" 
+            class="form-control" 
+            id="data_entrada" 
+            name="data_entrada" 
+            placeholder="dd/mm/aaaa"
+            value="{{ aluno.data_entrada.strftime('%d/%m/%Y') if aluno else '' }}" 
+            required
+          >
+        </div>
+        <!-- Data de Pagamento -->
+        <div class="mb-3">
+          <label for="data_pagamento" class="form-label">Data de Pagamento</label>
+          <input 
+            type="text" 
+            class="form-control" 
+            id="data_pagamento" 
+            name="data_pagamento" 
+            placeholder="dd/mm/aaaa"
+            value="{{ aluno.data_pagamento.strftime('%d/%m/%Y') if aluno else '' }}" 
+            required
+          >
+        </div>
+      </div> <!-- Fim da coluna 2 -->
+    </div> <!-- Fim da row -->
+
+    <!-- Nova Row para Data de Nascimento e Mensagem de Boas-Vindas -->
+    <div class="row">
+      <!-- Data de Nascimento (coluna 1) -->
+      <div class="col-md-6">
+        <div class="mb-3">
+          <label for="data_nascimento" class="form-label">Data de Nascimento</label>
+          <input 
+            type="text" 
+            class="form-control" 
+            id="data_nascimento" 
+            name="data_nascimento" 
+            placeholder="dd/mm/aaaa"
+            value="{{ aluno.data_nascimento.strftime('%d/%m/%Y') if aluno and aluno.data_nascimento else '' }}" 
+            required
+          >
+        </div>
+      </div>
+      <!-- Mensagem de Boas-Vindas (coluna 2) -->
+      <div class="col-md-6">
+        <div class="mb-3">
+          <label for="mensagem_boasvindas" class="form-label">Mensagem de Boas-Vindas</label>
+          <textarea 
+            class="form-control" 
+            id="mensagem_boasvindas" 
+            name="mensagem_boasvindas" 
+            placeholder="Digite a mensagem que será enviada por email e WhatsApp..."
+            rows="3" 
+            required
+          >{% if aluno and aluno.mensagem_boasvindas %}{{ aluno.mensagem_boasvindas }}{% else %}Bem-vindo(a) à Academia Geleia! Esperamos que sua jornada seja de muito sucesso!{% endif %}</textarea>
+        </div>
+      </div>
     </div>
-    <div class="mb-3">
-      <label for="categoria" class="form-label">Categoria</label>
-      <select class="form-select" id="categoria" name="categoria" required>
-        <option value="infantil" {% if aluno and aluno.categoria == 'infantil' %}selected{% endif %}>Infantil</option>
-        <option value="adulto" {% if aluno and aluno.categoria == 'adulto' %}selected{% endif %}>Adulto</option>
-      </select>
+
+    <!-- Botões com tema preto e vermelho -->
+    <div class="form-buttons">
+      <button type="submit" class="btn btn-success">Salvar</button>
+      <a href="{{ url_for('listar_alunos') }}" class="btn btn-secondary">Cancelar</a>
     </div>
-    <div class="mb-3">
-      <label for="idade" class="form-label">Idade</label>
-      <input type="number" class="form-control" id="idade" name="idade" value="{{ aluno.idade if aluno else '' }}" required>
-    </div>
-    <div class="mb-3">
-      <label for="faixa_cor" class="form-label">Cor da Faixa</label>
-      <input type="text" class="form-control" id="faixa_cor" name="faixa_cor" value="{{ aluno.faixa_cor if aluno else '' }}" required>
-    </div>
-    <div class="mb-3">
-      <label for="faixa_grau" class="form-label">Grau da Faixa</label>
-      <input type="text" class="form-control" id="faixa_grau" name="faixa_grau" value="{{ aluno.faixa_grau if aluno else '' }}" required>
-    </div>
-    <div class="mb-3">
-      <label for="email" class="form-label">Email</label>
-      <input type="email" class="form-control" id="email" name="email" value="{{ aluno.email if aluno else '' }}">
-    </div>
-    <div class="mb-3">
-      <label for="data_entrada" class="form-label">Data de Entrada (dd/mm/aaaa)</label>
-      <input type="text" class="form-control" id="data_entrada" name="data_entrada" placeholder="dd/mm/aaaa" value="{{ aluno.data_entrada.strftime('%d/%m/%Y') if aluno else '' }}" required>
-    </div>
-    <div class="mb-3">
-      <label for="data_pagamento" class="form-label">Data de Pagamento (dd/mm/aaaa)</label>
-      <input type="text" class="form-control" id="data_pagamento" name="data_pagamento" placeholder="dd/mm/aaaa" value="{{ aluno.data_pagamento.strftime('%d/%m/%Y') if aluno else '' }}" required>
-    </div>
-    <button type="submit" class="btn btn-success">Salvar</button>
-    <a href="{{ url_for('listar_alunos') }}" class="btn btn-secondary">Cancelar</a>
   </form>
+</div>
 {% endblock %}

@@ -1,17 +1,33 @@
 ﻿import os
-from flask import Flask, render_template, request, redirect, url_for, flash
+from flask import Flask, render_template, request, redirect, url_for, flash, session
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime, timedelta
 from apscheduler.schedulers.background import BackgroundScheduler
+from functools import wraps
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///academia.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['SECRET_KEY'] = 'sua-chave-secreta'  # Necessária para mensagens flash
+app.config['SECRET_KEY'] = 'sua-chave-secreta'  # Necessária para mensagens flash e sessão
 
 db = SQLAlchemy(app)
 
-# Filtro para mapear faixa_cor para um código de cor CSS (hex)
+# =========================
+# DECORATOR PARA LOGIN
+# =========================
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        # Permite acesso se o endpoint for 'login' ou para arquivos estáticos
+        if request.endpoint not in ['login', 'static'] and not session.get('logged_in'):
+            flash("Por favor, faça login para acessar esta página.", "warning")
+            return redirect(url_for('login'))
+        return f(*args, **kwargs)
+    return decorated_function
+
+# =========================
+# FILTRO DE COR DA FAIXA
+# =========================
 def get_color_code(faixa_cor):
     mapping = {
         "Branca": "#ffffff",
@@ -30,7 +46,9 @@ def get_color_code(faixa_cor):
 
 app.jinja_env.filters['faixa_color'] = get_color_code
 
-# Modelo de dados
+# =========================
+# MODELO DE DADOS
+# =========================
 class Aluno(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     nome = db.Column(db.String(100), nullable=False)
@@ -47,23 +65,57 @@ class Aluno(db.Model):
 
     @property
     def proximo_pagamento(self):
-        """Calcula o próximo pagamento (30 dias após o último pagamento)."""
         return self.data_pagamento + timedelta(days=30)
 
     @property
     def status_mensalidade(self):
-        """Retorna 'Em dia' se o último pagamento foi feito há menos de 30 dias, senão 'Atrasado'."""
         if datetime.today().date() <= self.data_pagamento + timedelta(days=30):
             return "Em dia"
         else:
             return "Atrasado"
 
-# Rota para a página inicial
+# =========================
+# ROTA DE LOGIN
+# =========================
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    """
+    Tela de login simples.
+    Usuário e senha fixos para exemplo (admin/1234).
+    Em produção, utilize um sistema de usuários com senhas criptografadas.
+    """
+    if request.method == 'POST':
+        username = request.form.get('username')
+        password = request.form.get('password')
+        if username == 'admin' and password == '1234':
+            session['logged_in'] = True
+            flash("Login bem-sucedido!", "success")
+            return redirect(url_for('home'))
+        else:
+            flash("Credenciais inválidas. Tente novamente.", "danger")
+            return redirect(url_for('login'))
+    return render_template('login.html')
+
+# =========================
+# ROTA DE LOGOUT
+# =========================
+@app.route('/logout')
+@login_required
+def logout():
+    session.pop('logged_in', None)
+    flash("Logout realizado com sucesso.", "success")
+    return redirect(url_for('login'))
+
+# =========================
+# ROTAS PROTEGIDAS (LOGIN NECESSÁRIO)
+# =========================
 @app.route('/')
+@login_required
 def home():
     return render_template('home.html')
 
 @app.route('/alunos')
+@login_required
 def listar_alunos():
     alunos_infantil = Aluno.query.filter_by(categoria="infantil").order_by(Aluno.nome).all()
     alunos_adulto = Aluno.query.filter_by(categoria="adulto").order_by(Aluno.nome).all()
@@ -72,6 +124,7 @@ def listar_alunos():
                            alunos_adulto=alunos_adulto)
 
 @app.route('/alunos/new', methods=['GET', 'POST'])
+@login_required
 def criar_aluno():
     if request.method == 'POST':
         nome = request.form.get('nome')
@@ -115,6 +168,7 @@ def criar_aluno():
     return render_template('aluno_form.html', aluno=None)
 
 @app.route('/alunos/<int:aluno_id>/edit', methods=['GET', 'POST'])
+@login_required
 def editar_aluno(aluno_id):
     aluno = Aluno.query.get_or_404(aluno_id)
     if request.method == 'POST':
@@ -146,6 +200,7 @@ def editar_aluno(aluno_id):
     return render_template('aluno_form.html', aluno=aluno)
 
 @app.route('/alunos/<int:aluno_id>/delete', methods=['POST'])
+@login_required
 def deletar_aluno(aluno_id):
     aluno = Aluno.query.get_or_404(aluno_id)
     db.session.delete(aluno)
@@ -154,6 +209,7 @@ def deletar_aluno(aluno_id):
     return redirect(url_for('listar_alunos'))
 
 @app.route('/alunos/<int:aluno_id>/pagar', methods=['POST'])
+@login_required
 def pagar_mensalidade(aluno_id):
     aluno = Aluno.query.get_or_404(aluno_id)
     aluno.data_pagamento = datetime.today().date()
@@ -161,8 +217,11 @@ def pagar_mensalidade(aluno_id):
     flash(f"Mensalidade paga com sucesso para <strong>{aluno.nome}</strong>!", "success")
     return redirect(url_for('listar_alunos'))
 
-# Rota Mensalidades - Dashboard Financeiro
+# =========================
+# ROTA MENSALIDADES (PROTEGIDA)
+# =========================
 @app.route('/mensalidades')
+@login_required
 def mensalidades():
     """Exibe um resumo financeiro das mensalidades, usando dados reais do banco."""
     total_adultos = Aluno.query.filter_by(categoria="adulto").count()
@@ -176,7 +235,7 @@ def mensalidades():
 
     # Calcula a receita mensal real com base na data de pagamento
     monthly_revenue = {m: 0 for m in range(1, 13)}
-    # Calcula o status mensal (quantos pagamentos "Em dia" e "Atrasado" por mês)
+    # Calcula o status mensal (pagamentos "Em dia" e "Atrasado" por mês)
     monthly_status = {m: {"Em dia": 0, "Atrasado": 0} for m in range(1, 13)}
     for aluno in Aluno.query.all():
         mes_pg = aluno.data_pagamento.month
@@ -207,6 +266,9 @@ def mensalidades():
                            status_counts=status_counts,
                            monthly_status=monthly_status)
 
+# =========================
+# FUNÇÃO PARA COBRANÇA
+# =========================
 def cobrar_mensalidade():
     hoje = datetime.today().date()
     alunos = Aluno.query.all()

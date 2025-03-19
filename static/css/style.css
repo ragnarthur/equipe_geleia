@@ -17,37 +17,25 @@ body {
 /* =========================
    Navbar Styling
    ========================= */
-
-/* Navbar preta com risca vermelha na parte de baixo */
 .navbar {
     background-color: #000000 !important; /* Fundo preto */
-    border-bottom: 5px solid #ff0000;       /* Risca vermelha */
+    border-bottom: 5px solid #ff0000;
     box-shadow: none;
 }
-
-/* Texto e links em branco, hover vermelho claro */
 .navbar-brand, .nav-link {
     color: #ffffff !important;
     transition: color 0.3s ease;
 }
-
-/* Aumentamos a altura do logo para dar mais destaque */
 .logo-navbar {
-    height: 125px;  /* Ajuste conforme desejar */
+    height: 125px;
     margin-right: 30px;
 }
-
-/* Aumentamos o tamanho do texto "Equipe Geléia" */
 .navbar-brand {
-    font-size: 3rem;  /* Tamanho maior para mais destaque */
+    font-size: 3rem;
 }
-
-/* Aumentamos a fonte dos links da navbar */
 .nav-link {
-    font-size: 1.4rem;  /* Ajuste conforme desejar */
+    font-size: 1.4rem;
 }
-
-/* Efeito hover nos links */
 .nav-link:hover {
     color: #ff6666 !important;
 }
@@ -55,11 +43,6 @@ body {
 /* =========================
    Container and Layout
    ========================= */
-
-/*
-   Ajustamos o container para ter uma largura máxima de 1400px,
-   ocupando 95% da tela e ficando centralizado.
-*/
 .container {
     max-width: 1400px !important; 
     width: 95%; 
@@ -71,35 +54,48 @@ body {
 /* =========================
    Table Styling
    ========================= */
-
-/*
-   Tabelas em fundo branco (#fff), texto preto (#333),
-   cabeçalho preto (#000) com texto branco, borda inferior vermelha.
-   Aumentamos o tamanho da fonte para melhor legibilidade dos dados.
-*/
-.table {
-    background-color: #ffffff; /* Fundo da tabela */
+   .table {
+    width: 100%; /* Faz a tabela ocupar toda a largura do container */
+    background-color: #ffffff;
     border-radius: 5px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    overflow: hidden;
+
+    /* Remova ou comente o overflow: hidden */
+    /* overflow: hidden; */
+
+    /* Se quiser permitir que o zoom ultrapasse o tamanho original */
+    overflow: visible;
 }
+
 .table thead th {
-    background-color: #000000; /* Cabeçalho preto */
+    background-color: #000000;
     color: #ffffff;
     font-weight: 700;
     padding: 12px;
-    border-bottom: 2px solid #ff0000; /* Linha inferior vermelha no thead */
-    font-size: 1.4rem; /* Aumenta o tamanho da fonte no cabeçalho */
+    border-bottom: 2px solid #ff0000;
+    font-size: 1.4rem;
 }
 .table tbody td {
     padding: 12px;
     color: #333333;
-    font-size: 1.4rem; /* Aumenta o tamanho da fonte nos dados */
+    font-size: 1.4rem;
 }
 /* Linhas listradas em #f9f9f9 */
 .table-striped tbody tr:nth-of-type(odd) {
     background-color: #f9f9f9;
 }
+
+/* 
+   COMENTADO: 
+   Removemos ou comentamos a regra CSS de hover, 
+   pois agora vamos usar JS (tableHover.js).
+*/
+/*
+.table tbody tr:hover {
+    background-color: #dcdcdc;
+    transition: background-color 0.3s ease;
+}
+*/
 
 /* Força os botões e formulários dentro das células da tabela a ficarem lado a lado */
 .table td a.btn,
@@ -113,8 +109,6 @@ body {
 /* =========================
    Buttons Styling
    ========================= */
-
-/* Botão primário: fundo preto, texto branco, hover vermelho */
 .btn-primary {
     background-color: #000000;
     border-color: #000000;
@@ -125,8 +119,6 @@ body {
     background-color: #ff0000;
     border-color: #ff0000;
 }
-
-/* Botão de perigo (deletar) */
 .btn-danger {
     background-color: #e53935;
     border-color: #e53935;
@@ -137,28 +129,37 @@ body {
     background-color: #d32f2f;
     border-color: #c62828;
 }
-
-/* Botão de sucesso: fundo preto, hover vermelho */
 .btn-success {
+    background-color: #ff0000; /* Sempre vermelho */
+    border-color: #ff0000;
+    color: #ffffff;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+.btn-success:hover {
+    background-color: #cc0000;
+    border-color: #cc0000;
+    color: #ffffff;
+}
+
+/* =========================
+   Overriding Bootstrap's .btn-secondary
+   to match our black + red theme
+   ========================= */
+.btn-secondary {
     background-color: #000000;
     border-color: #000000;
     color: #ffffff;
     transition: background-color 0.3s ease, border-color 0.3s ease;
 }
-.btn-success:hover {
+.btn-secondary:hover {
     background-color: #ff0000;
     border-color: #ff0000;
+    color: #ffffff;
 }
 
 /* =========================
    Form Styling
    ========================= */
-
-/*
-   Campos de formulário em branco (#fff),
-   borda #ccc, texto #333.
-   Foco com borda vermelha.
-*/
 .form-control {
     border-radius: 4px;
     box-shadow: none;
@@ -179,8 +180,6 @@ body {
 /* =========================
    Alerts and Spacing
    ========================= */
-
-/* Alertas em fundo branco, texto preto */
 .alert {
     background-color: #ffffff;
     color: #333333;
@@ -193,7 +192,6 @@ body {
 /* =========================
    Tabs Styling (para as listas de alunos)
    ========================= */
-
 .nav-tabs .tab-infantil,
 .nav-tabs .tab-adulto {
     background-color: #000000;
@@ -212,7 +210,6 @@ body {
 /* =========================
    Faixa Color Square
    ========================= */
-
 .faixa-square {
     display: inline-block;
     width: 20px;
@@ -225,12 +222,6 @@ body {
 /* =========================
    Home Page Styling
    ========================= */
-
-/*
-   A configuração das imagens de background será controlada
-   diretamente nos arquivos HTML (ex: home.html).
-   Aqui mantemos apenas a estrutura de layout para a home-page.
-*/
 .home-page {
     width: 100%;
     height: 100vh;
@@ -239,19 +230,16 @@ body {
     justify-content: center;
     align-items: center;
 }
-
 .home-title {
     color: #ffffff;
     font-size: 2.5rem;
     text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.7);
     margin-bottom: 20px;
 }
-
 .home-buttons {
     display: flex;
     gap: 20px;
 }
-
 .home-buttons a {
     background-color: #000000;
     color: #ffffff;
@@ -268,27 +256,21 @@ body {
 /* =========================
    Dropdown "Ações" Styling
    ========================= */
-
-/* Botão do dropdown no estilo "faixa preta" */
 .dropdown-acao {
-    background-color: #000000; /* Fundo preto */
+    background-color: #000000;
     border-color: #000000;
     color: #ffffff;
     transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 .dropdown-acao:hover {
-    background-color: #ff0000; /* Hover vermelho */
+    background-color: #ff0000;
     border-color: #ff0000;
     color: #ffffff;
 }
-
-/* Itens do dropdown: fundo branco, texto escuro */
 .dropdown-menu {
     background-color: #ffffff;
     border: 1px solid #cccccc;
 }
-
-/* Links dentro do dropdown: texto preto, hover cinza */
 .dropdown-item {
     color: #333333;
     transition: background-color 0.3s ease;
@@ -296,8 +278,58 @@ body {
 .dropdown-item:hover {
     background-color: #f2f2f2;
 }
-
-/* Item de exclusão em vermelho */
 .dropdown-item.text-danger {
     color: #e53935 !important;
+}
+
+/* =========================
+   Status Styling
+   ========================= */
+.status-atrasado {
+    color: #ff0000;
+    text-decoration: underline;
+    font-weight: 600;
+}
+.status-em-dia {
+    color: #008000;
+    text-decoration: underline;
+    font-weight: 600;
+}
+
+/* =========================
+   Add/Edit Aluno Form Styling
+   ========================= */
+.form-container {
+    background-color: #ffffff;
+    border: 1px solid #cccccc;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+.form-container .row > [class*="col-"] {
+    margin-bottom: 1.5rem;
+}
+.form-container .form-label {
+    font-weight: 700;
+    color: #333333;
+}
+.form-buttons {
+    margin-top: 1rem;
+    display: flex;
+    gap: 10px;
+}
+.form-buttons .btn {
+    font-size: 1.2rem;
+    padding: 8px 16px;
+}
+.btn-secondary {
+    background-color: #000000;
+    border-color: #000000;
+    color: #ffffff;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+.btn-secondary:hover {
+    background-color: #ff0000;
+    border-color: #ff0000;
+    color: #ffffff;
 }

@@ -134,7 +134,7 @@
         title: 'Distribuição de Alunos',
         is3D: true,
         chartArea: { width: '90%', height: '80%' },
-        colors: ['#000000', '#ff0000']  // Preto e vermelho
+        colors: ['#000000', '#ff0000']
       };
       var chart = new google.visualization.PieChart(document.getElementById('categoriaChart'));
       chart.draw(data, options);
@@ -153,7 +153,7 @@
         title: 'Status de Pagamento',
         is3D: true,
         chartArea: { width: '90%', height: '80%' },
-        colors: ['#000000', '#ff0000']  // Preto e vermelho
+        colors: ['#000000', '#ff0000']
       };
       var chart = new google.visualization.PieChart(document.getElementById('statusChart'));
       chart.draw(data, options);
@@ -176,7 +176,7 @@
         legend: { position: 'none' },
         vAxis: { minValue: 0 },
         chartArea: { width: '80%', height: '70%' },
-        colors: ['#000000']  // Colunas em preto
+        colors: ['#000000']
       };
       var chart = new google.visualization.ColumnChart(document.getElementById('receitaChart'));
       chart.draw(data, options);

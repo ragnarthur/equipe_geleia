@@ -1,0 +1,24 @@
+﻿{% extends "layout.html" %}
+{% block title %}Login - Academia Jiu Jitsu{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-column align-items-center">
+  <h2 class="mb-4">Login do Administrador</h2>
+  
+  <!-- Formulário centralizado e com inputs menores -->
+  <form method="POST" action="{{ url_for('login') }}" style="max-width: 300px; width: 100%;">
+    <div class="mb-3">
+      <label for="username" class="form-label">Usuário</label>
+      <!-- form-control-sm para deixar o input menor -->
+      <input type="text" class="form-control form-control-sm" id="username" name="username" required>
+    </div>
+    <div class="mb-3">
+      <label for="password" class="form-label">Senha</label>
+      <!-- form-control-sm para deixar o input menor -->
+      <input type="password" class="form-control form-control-sm" id="password" name="password" required>
+    </div>
+    <!-- Botão menor (btn-sm) -->
+    <button type="submit" class="btn btn-primary btn-sm w-100">Entrar</button>
+  </form>
+</div>
+{% endblock %}

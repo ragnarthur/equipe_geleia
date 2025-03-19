@@ -1,5 +1,4 @@
 ﻿{% extends "layout.html" %}
-
 {% block title %}Lista de Alunos{% endblock %}
 
 {% block content %}
@@ -45,7 +44,13 @@
             <td>{{ aluno.email }}</td>
             <td>{{ aluno.data_entrada.strftime('%d/%m/%Y') }}</td>
             <td>{{ aluno.proximo_pagamento.strftime('%d/%m/%Y') }}</td>
-            <td>{{ aluno.status_mensalidade }}</td>
+            <td>
+              {% if aluno.status_mensalidade == "Atrasado" %}
+                <span class="status-atrasado">{{ aluno.status_mensalidade }}</span>
+              {% else %}
+                <span class="status-em-dia">{{ aluno.status_mensalidade }}</span>
+              {% endif %}
+            </td>
             <td>
               <!-- Dropdown de Ações -->
               <div class="dropdown">
@@ -57,13 +62,11 @@
                     <a class="dropdown-item" href="{{ url_for('editar_aluno', aluno_id=aluno.id) }}">Editar</a>
                   </li>
                   <li>
-                    <!-- Pagar Mensalidade -->
                     <form action="{{ url_for('pagar_mensalidade', aluno_id=aluno.id) }}" method="post" onsubmit="return confirm('Confirmar pagamento de mensalidade?');">
                       <button class="dropdown-item" type="submit">Pagar Mensalidade</button>
                     </form>
                   </li>
                   <li>
-                    <!-- Excluir Aluno -->
                     <form action="{{ url_for('deletar_aluno', aluno_id=aluno.id) }}" method="post" onsubmit="return confirm('Tem certeza que deseja deletar este aluno?');">
                       <button class="dropdown-item text-danger" type="submit">Excluir</button>
                     </form>
@@ -106,7 +109,13 @@
             <td>{{ aluno.email }}</td>
             <td>{{ aluno.data_entrada.strftime('%d/%m/%Y') }}</td>
             <td>{{ aluno.proximo_pagamento.strftime('%d/%m/%Y') }}</td>
-            <td>{{ aluno.status_mensalidade }}</td>
+            <td>
+              {% if aluno.status_mensalidade == "Atrasado" %}
+                <span class="status-atrasado">{{ aluno.status_mensalidade }}</span>
+              {% else %}
+                <span class="status-em-dia">{{ aluno.status_mensalidade }}</span>
+              {% endif %}
+            </td>
             <td>
               <!-- Dropdown de Ações -->
               <div class="dropdown">
@@ -118,13 +127,11 @@
                     <a class="dropdown-item" href="{{ url_for('editar_aluno', aluno_id=aluno.id) }}">Editar</a>
                   </li>
                   <li>
-                    <!-- Pagar Mensalidade -->
                     <form action="{{ url_for('pagar_mensalidade', aluno_id=aluno.id) }}" method="post" onsubmit="return confirm('Confirmar pagamento de mensalidade?');">
                       <button class="dropdown-item" type="submit">Pagar Mensalidade</button>
                     </form>
                   </li>
                   <li>
-                    <!-- Excluir Aluno -->
                     <form action="{{ url_for('deletar_aluno', aluno_id=aluno.id) }}" method="post" onsubmit="return confirm('Tem certeza que deseja deletar este aluno?');">
                       <button class="dropdown-item text-danger" type="submit">Excluir</button>
                     </form>
