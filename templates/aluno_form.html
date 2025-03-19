@@ -117,7 +117,7 @@
       </div> <!-- Fim da coluna 2 -->
     </div> <!-- Fim da row -->
 
-    <!-- Nova Row para Data de Nascimento e Mensagem de Boas-Vindas -->
+    <!-- Nova Row para Data de Nascimento e Telefone -->
     <div class="row">
       <!-- Data de Nascimento (coluna 1) -->
       <div class="col-md-6">
@@ -134,8 +134,26 @@
           >
         </div>
       </div>
-      <!-- Mensagem de Boas-Vindas (coluna 2) -->
+      <!-- Telefone (coluna 2) -->
       <div class="col-md-6">
+        <div class="mb-3">
+          <label for="telefone" class="form-label">Telefone</label>
+          <input 
+            type="text" 
+            class="form-control" 
+            id="telefone" 
+            name="telefone" 
+            placeholder="(XX) XXXXX-XXXX"
+            value="{{ aluno.telefone if aluno and aluno.telefone else '' }}" 
+            required
+          >
+        </div>
+      </div>
+    </div>
+
+    <!-- Nova Row para Mensagem de Boas-Vindas -->
+    <div class="row">
+      <div class="col-12">
         <div class="mb-3">
           <label for="mensagem_boasvindas" class="form-label">Mensagem de Boas-Vindas</label>
           <textarea 
@@ -145,7 +163,7 @@
             placeholder="Digite a mensagem que será enviada por email e WhatsApp..."
             rows="3" 
             required
-          >{% if aluno and aluno.mensagem_boasvindas %}{{ aluno.mensagem_boasvindas }}{% else %}Bem-vindo(a) à Academia Geleia! Esperamos que sua jornada seja de muito sucesso!{% endif %}</textarea>
+          >{% if aluno and aluno.mensagem_boasvindas %}{{ aluno.mensagem_boasvindas }}{% else %}Bem-vindo(a) ao Centro de Treinamento Geleia! Esperamos que sua jornada seja de muito sucesso!{% endif %}</textarea>
         </div>
       </div>
     </div>

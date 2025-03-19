@@ -8,6 +8,22 @@ def random_date(start, end):
     random_days = random.randrange(delta.days + 1)
     return start + timedelta(days=random_days)
 
+def generate_birth_date(age):
+    """Gera uma data de nascimento aproximada com base na idade."""
+    hoje = datetime.today().date()
+    # Calcula o ano de nascimento aproximado
+    birth_year = hoje.year - age
+    # Define um intervalo no ano de nascimento (1º Jan a 31 Dez)
+    start = datetime(birth_year, 1, 1).date()
+    end = datetime(birth_year, 12, 31).date()
+    return random_date(start, end)
+
+def generate_phone():
+    """Gera um telefone fictício no formato (31) 9XXXX-XXXX."""
+    ddd = "31"  # Exemplo de DDD
+    number = "9" + "".join([str(random.randint(0, 9)) for _ in range(8)])
+    return f"({ddd}) {number[:4]}-{number[4:]}"
+
 def populate_database():
     with app.app_context():
         db.drop_all()
@@ -46,6 +62,16 @@ def populate_database():
             data_entrada = random_date(inicio_simulacao, hoje)
             # Data de pagamento: entre data de entrada e hoje
             data_pagamento = random_date(data_entrada, hoje)
+            # Data de nascimento baseada na idade (aproximada)
+            data_nascimento = generate_birth_date(idade)
+            # Telefone fictício
+            telefone = generate_phone()
+            # Mensagem de boas-vindas padrão
+            mensagem_boasvindas = "Bem-vindo(a) à Academia Geleia! Esperamos que sua jornada seja de muito sucesso!"
+            # Preferência de comunicação (definida como 'ambos' para este exemplo)
+            preferencia_comunicacao = "ambos"
+            # Ativo: True (por padrão)
+            ativo = True
 
             alunos_imaginarios.append({
                 "nome": nome,
@@ -55,13 +81,19 @@ def populate_database():
                 "faixa_grau": grau,
                 "email": email,
                 "data_entrada": data_entrada.strftime('%Y-%m-%d'),
-                "data_pagamento": data_pagamento.strftime('%Y-%m-%d')
+                "data_pagamento": data_pagamento.strftime('%Y-%m-%d'),
+                "data_nascimento": data_nascimento.strftime('%Y-%m-%d'),
+                "mensagem_boasvindas": mensagem_boasvindas,
+                "telefone": telefone,
+                "ativo": ativo,
+                "preferencia_comunicacao": preferencia_comunicacao
             })
         
         for aluno_data in alunos_imaginarios:
             try:
                 data_en = datetime.strptime(aluno_data['data_entrada'], '%Y-%m-%d').date()
                 data_pg = datetime.strptime(aluno_data['data_pagamento'], '%Y-%m-%d').date()
+                data_nasc = datetime.strptime(aluno_data['data_nascimento'], '%Y-%m-%d').date()
             except ValueError as e:
                 print(f"Erro ao converter data para {aluno_data['nome']}: {e}")
                 continue
@@ -74,7 +106,12 @@ def populate_database():
                 faixa_grau=aluno_data['faixa_grau'],
                 email=aluno_data['email'],
                 data_entrada=data_en,
-                data_pagamento=data_pg
+                data_pagamento=data_pg,
+                data_nascimento=data_nasc,
+                mensagem_boasvindas=aluno_data['mensagem_boasvindas'],
+                telefone=aluno_data['telefone'],
+                ativo=aluno_data['ativo'],
+                preferencia_comunicacao=aluno_data['preferencia_comunicacao']
             )
             db.session.add(novo_aluno)
         

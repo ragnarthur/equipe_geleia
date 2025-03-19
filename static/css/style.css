@@ -19,7 +19,7 @@ body {
    ========================= */
 .navbar {
     background-color: #000000 !important; /* Fundo preto */
-    border-bottom: 5px solid #ff0000;
+    border-bottom: 5px solid #ff0000;       /* Risca vermelha */
     box-shadow: none;
 }
 .navbar-brand, .nav-link {
@@ -54,19 +54,12 @@ body {
 /* =========================
    Table Styling
    ========================= */
-   .table {
-    width: 100%; /* Faz a tabela ocupar toda a largura do container */
+.table {
     background-color: #ffffff;
     border-radius: 5px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-
-    /* Remova ou comente o overflow: hidden */
-    /* overflow: hidden; */
-
-    /* Se quiser permitir que o zoom ultrapasse o tamanho original */
-    overflow: visible;
+    overflow: hidden;
 }
-
 .table thead th {
     background-color: #000000;
     color: #ffffff;
@@ -84,18 +77,6 @@ body {
 .table-striped tbody tr:nth-of-type(odd) {
     background-color: #f9f9f9;
 }
-
-/* 
-   COMENTADO: 
-   Removemos ou comentamos a regra CSS de hover, 
-   pois agora vamos usar JS (tableHover.js).
-*/
-/*
-.table tbody tr:hover {
-    background-color: #dcdcdc;
-    transition: background-color 0.3s ease;
-}
-*/
 
 /* Força os botões e formulários dentro das células da tabela a ficarem lado a lado */
 .table td a.btn,
@@ -160,6 +141,11 @@ body {
 /* =========================
    Form Styling
    ========================= */
+/*
+   Campos de formulário em branco (#fff),
+   borda #ccc, texto #333.
+   Foco com borda vermelha.
+*/
 .form-control {
     border-radius: 4px;
     box-shadow: none;
@@ -167,6 +153,7 @@ body {
     color: #333333;
     border: 1px solid #cccccc;
     transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    font-size: 1.2rem; /* Fonte aumentada para inputs */
 }
 .form-control:focus {
     border-color: #ff0000;
@@ -270,6 +257,8 @@ body {
 .dropdown-menu {
     background-color: #ffffff;
     border: 1px solid #cccccc;
+    z-index: 9999 !important;
+    position: absolute;
 }
 .dropdown-item {
     color: #333333;
