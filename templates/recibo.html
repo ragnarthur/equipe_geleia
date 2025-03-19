@@ -1,0 +1,63 @@
+﻿{% extends "layout.html" %}
+{% block title %}Recibo de Pagamento{% endblock %}
+
+{% block content %}
+<!--
+  Card container que agrupa os detalhes do recibo de pagamento.
+  Este card utiliza classes do Bootstrap para formatação e margens.
+-->
+<div class="card mt-4">
+  <!-- Cabeçalho do card: Exibe o título "Recibo de Pagamento" com estilos personalizados (ex.: fundo preto, borda vermelha) -->
+  <div class="card-header card-header-recibo">
+    Recibo de Pagamento
+  </div>
+  
+  <!-- Corpo do card: Contém as informações do recibo -->
+  <div class="card-body recibo-body">
+    <!-- Exibição do nome do destinatário do recibo -->
+    <h5 class="card-title mb-3">
+      <strong>Recibo para:</strong> {{ recibo.nome }}
+    </h5>
+    
+    <!-- Exibição da data em que o pagamento foi realizado -->
+    <p class="card-text">
+      <strong>Data do Pagamento:</strong> {{ recibo.data_pagamento }}
+    </p>
+    
+    <!-- Exibição do valor pago -->
+    <p class="card-text">
+      <strong>Valor:</strong> R$ {{ recibo.valor }}
+    </p>
+    
+    <!-- Exibição de uma mensagem adicional, se houver -->
+    <p class="card-text">{{ recibo.mensagem }}</p>
+    
+    <!-- Exibição da data do próximo pagamento, caso esteja disponível -->
+    {% if recibo.proximo_pagamento %}
+      <p class="card-text">
+        <strong>Próximo Pagamento:</strong> {{ recibo.proximo_pagamento }}
+      </p>
+    {% endif %}
+    
+    <!-- Bloco condicional: os botões serão exibidos somente se não estivermos no modo PDF -->
+    {% if not pdf_mode %}
+      <!-- Botão para retornar à lista de alunos -->
+      <a href="{{ url_for('listar_alunos') }}" class="btn btn-secondary mt-3">
+        Voltar para Lista de Alunos
+      </a>
+  
+      <!-- Botão para baixar o recibo em PDF.
+           Os parâmetros (nome, data_pagamento, valor, mensagem, proximo_pagamento) são passados via query string para a rota que gera o PDF -->
+      <a href="{{ url_for('recibo_pdf', 
+                           nome=recibo.nome, 
+                           data_pagamento=recibo.data_pagamento, 
+                           valor=recibo.valor, 
+                           mensagem=recibo.mensagem, 
+                           proximo_pagamento=recibo.proximo_pagamento) }}" 
+         class="btn btn-primary mt-3">
+          Baixar Recibo em PDF
+      </a>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

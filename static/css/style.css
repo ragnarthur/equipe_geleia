@@ -322,3 +322,18 @@ body {
     border-color: #ff0000;
     color: #ffffff;
 }
+
+/* =========================
+   Recibo Page Styling
+   ========================= */
+
+/* Cabeçalho do card do recibo: fundo preto, texto branco, borda inferior vermelha */
+.card-header-recibo {
+    background-color: #000000; /* Fundo preto */
+    color: #ffffff;            /* Texto branco */
+    border-bottom: 5px solid #ff0000; /* Borda inferior vermelha */
+}
+/* Aumenta a fonte do card-body do recibo para 1.3rem (ajuste conforme desejar) */
+.card-body.recibo-body {
+    font-size: 1.6rem; 
+}

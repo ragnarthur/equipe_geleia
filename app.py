@@ -1,12 +1,17 @@
 ﻿import os
-from flask import Flask, render_template, request, redirect, url_for, flash, session
+from flask import Flask, render_template, request, redirect, url_for, flash, session, make_response
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime, timedelta
 from apscheduler.schedulers.background import BackgroundScheduler
 from functools import wraps
+import pdfkit
+
+# Se o seu banco de dados está na pasta "instance", construa o caminho absoluto:
+basedir = os.path.abspath(os.path.dirname(__file__))
+db_path = os.path.join(basedir, 'instance', 'academia.db')
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///academia.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + db_path
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = 'sua-chave-secreta'  # Necessária para mensagens flash e sessão
 
@@ -58,7 +63,12 @@ class Aluno(db.Model):
     faixa_grau = db.Column(db.String(50), nullable=False)
     email = db.Column(db.String(120), nullable=True)
     data_entrada = db.Column(db.Date, nullable=False)   # Data de entrada na academia
-    data_pagamento = db.Column(db.Date, nullable=False) # Data do último pagamento
+    data_pagamento = db.Column(db.Date, nullable=False)   # Data do último pagamento
+    data_nascimento = db.Column(db.Date, nullable=True)     # Novo campo: Data de Nascimento
+    telefone = db.Column(db.String(20), nullable=True)      # Novo campo: Telefone
+    mensagem_boasvindas = db.Column(db.Text, nullable=True) # Novo campo: Mensagem de Boas-Vindas
+    ativo = db.Column(db.Boolean, default=True)             # Novo campo: Ativo/inativo
+    preferencia_comunicacao = db.Column(db.String(20), nullable=True)  # Novo campo: Ex. "email", "whatsapp" ou "ambos"
 
     def __repr__(self):
         return f"<Aluno {self.nome}>"
@@ -135,6 +145,10 @@ def criar_aluno():
         email = request.form.get('email')
         data_entrada_str = request.form.get('data_entrada')
         data_pagamento_str = request.form.get('data_pagamento')
+        data_nascimento_str = request.form.get('data_nascimento')
+        telefone = request.form.get('telefone')
+        mensagem_boasvindas = request.form.get('mensagem_boasvindas')
+        
         try:
             idade = int(idade)
         except ValueError:
@@ -150,7 +164,12 @@ def criar_aluno():
         except ValueError:
             flash("Data de pagamento inválida. Use o formato dd/mm/aaaa.", "danger")
             return redirect(url_for('criar_aluno'))
-
+        try:
+            data_nascimento = datetime.strptime(data_nascimento_str, '%d/%m/%Y').date()
+        except ValueError:
+            flash("Data de nascimento inválida. Use o formato dd/mm/aaaa.", "danger")
+            return redirect(url_for('criar_aluno'))
+        
         novo_aluno = Aluno(
             nome=nome,
             categoria=categoria,
@@ -159,7 +178,12 @@ def criar_aluno():
             faixa_grau=faixa_grau,
             email=email,
             data_entrada=data_entrada,
-            data_pagamento=data_pagamento
+            data_pagamento=data_pagamento,
+            data_nascimento=data_nascimento,
+            telefone=telefone,
+            mensagem_boasvindas=mensagem_boasvindas,
+            ativo=True,
+            preferencia_comunicacao="ambos"
         )
         db.session.add(novo_aluno)
         db.session.commit()
@@ -184,6 +208,7 @@ def editar_aluno(aluno_id):
         aluno.email = request.form.get('email')
         data_entrada_str = request.form.get('data_entrada')
         data_pagamento_str = request.form.get('data_pagamento')
+        data_nascimento_str = request.form.get('data_nascimento')
         try:
             aluno.data_entrada = datetime.strptime(data_entrada_str, '%d/%m/%Y').date()
         except ValueError:
@@ -194,6 +219,13 @@ def editar_aluno(aluno_id):
         except ValueError:
             flash("Data de pagamento inválida. Use o formato dd/mm/aaaa.", "danger")
             return redirect(url_for('editar_aluno', aluno_id=aluno_id))
+        try:
+            aluno.data_nascimento = datetime.strptime(data_nascimento_str, '%d/%m/%Y').date()
+        except ValueError:
+            flash("Data de nascimento inválida. Use o formato dd/mm/aaaa.", "danger")
+            return redirect(url_for('editar_aluno', aluno_id=aluno_id))
+        aluno.telefone = request.form.get('telefone')
+        aluno.mensagem_boasvindas = request.form.get('mensagem_boasvindas')
         db.session.commit()
         flash("Aluno atualizado com sucesso!", "success")
         return redirect(url_for('listar_alunos'))
@@ -214,8 +246,63 @@ def pagar_mensalidade(aluno_id):
     aluno = Aluno.query.get_or_404(aluno_id)
     aluno.data_pagamento = datetime.today().date()
     db.session.commit()
+    
+    # Define o valor da mensalidade com base na categoria
+    valor = 120 if aluno.categoria == 'adulto' else 100
+    recibo = {
+        'nome': aluno.nome,
+        'data_pagamento': aluno.data_pagamento.strftime('%d/%m/%Y'),
+        'valor': valor,
+        'mensagem': "Pagamento realizado com sucesso! Seu recibo foi gerado para envio por email/WhatsApp.",
+        'proximo_pagamento': aluno.proximo_pagamento.strftime('%d/%m/%Y')
+    }
     flash(f"Mensalidade paga com sucesso para <strong>{aluno.nome}</strong>!", "success")
-    return redirect(url_for('listar_alunos'))
+    # Exibe o recibo com pdf_mode=False (botões visíveis)
+    return render_template("recibo.html", recibo=recibo, pdf_mode=False)
+
+# =========================
+# ROTA PARA GERAR PDF DO RECIBO
+# =========================
+@app.route('/recibo/pdf')
+@login_required
+def recibo_pdf():
+    # Recupera os dados do recibo via query string
+    nome = request.args.get('nome')
+    data_pagamento = request.args.get('data_pagamento')
+    valor = request.args.get('valor')
+    mensagem = request.args.get('mensagem')
+    proximo_pagamento = request.args.get('proximo_pagamento')
+
+    # Reconstrói o dicionário do recibo com a nova informação
+    recibo = {
+        'nome': nome,
+        'data_pagamento': data_pagamento,
+        'valor': valor,
+        'mensagem': mensagem,
+        'proximo_pagamento': proximo_pagamento
+    }
+    
+    # Renderiza o template de recibo com pdf_mode=True (botões ocultos)
+    rendered = render_template('recibo.html', recibo=recibo, pdf_mode=True)
+    
+    # Define as opções para permitir acesso a arquivos locais, se necessário
+    options = {
+        'enable-local-file-access': None
+    }
+    
+    # Converte o HTML renderizado em PDF
+    pdf = pdfkit.from_string(rendered, False, options=options)
+    
+    # Gera o nome do arquivo com o nome do aluno e data do pagamento
+    safe_nome = nome.replace(" ", "_") if nome else "recibo"
+    safe_data = data_pagamento.replace("/", "-") if data_pagamento else "data"
+    filename = f"recibo_{safe_nome}_{safe_data}.pdf"
+    
+    # Prepara a resposta para download
+    response = make_response(pdf)
+    response.headers['Content-Type'] = 'application/pdf'
+    response.headers['Content-Disposition'] = f'attachment; filename={filename}'
+    return response
 
 # =========================
 # ROTA MENSALIDADES (PROTEGIDA)

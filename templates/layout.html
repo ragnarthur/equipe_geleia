@@ -6,14 +6,16 @@
   <!-- Bootstrap CDN -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <!-- CSS customizado -->
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <!-- Observação: _external=True gera URL absoluta, ex: http://127.0.0.1:5000/static/css/style.css -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css', _external=True) }}">
 </head>
 <body>
   <nav class="navbar navbar-expand-lg navbar-dark mb-4">
     <div class="container">
       <!-- Logo e nome da Equipe -->
       <a class="navbar-brand d-flex align-items-center" href="{{ url_for('home') }}">
-        <img src="{{ url_for('static', filename='images/logo.jpeg') }}" alt="Logo" class="logo-navbar">
+        <!-- _external=True para gerar URL completa, permitindo wkhtmltopdf carregar a imagem -->
+        <img src="{{ url_for('static', filename='images/logo.jpeg', _external=True) }}" alt="Logo" class="logo-navbar">
         Equipe Geleia
       </a>
 
@@ -64,12 +66,12 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   {% block scripts %}{% endblock %}
   <!-- Script para efeito de hover nas tabelas -->
-  <script src="{{ url_for('static', filename='js/tableHover.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/tableHover.js', _external=True) }}"></script>
 
   <!-- Script para máscara de datas -->
-<script src="{{ url_for('static', filename='js/dateMask.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/dateMask.js', _external=True) }}"></script>
 
-  <!--Script para máscara de telefone-->
-<script src="{{ url_for('static', filename='js/phoneMask.js') }}"></script>
+  <!-- Script para máscara de telefone -->
+  <script src="{{ url_for('static', filename='js/phoneMask.js', _external=True) }}"></script>
 </body>
 </html>
