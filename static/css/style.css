@@ -19,7 +19,7 @@ body {
    ========================= */
 .navbar {
     background-color: #000000 !important; /* Fundo preto */
-    border-bottom: 5px solid #ff0000;       /* Risca vermelha */
+    border-bottom: 5px solid #ff0000;     /* Risca vermelha */
     box-shadow: none;
 }
 .navbar-brand, .nav-link {
@@ -44,7 +44,7 @@ body {
    Container and Layout
    ========================= */
 .container {
-    max-width: 1400px !important; 
+    max-width: 2000px !important; /* Aumente conforme necessário */
     width: 95%; 
     margin: 0 auto; 
     padding-top: 30px;
@@ -54,12 +54,25 @@ body {
 /* =========================
    Table Styling
    ========================= */
+
+/* Permite que a linha expandida apareça fora sem ser cortada */
+.table-responsive {
+    overflow: visible !important;
+}
+
 .table {
     background-color: #ffffff;
     border-radius: 5px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    overflow: hidden;
+    /* overflow: hidden;  <-- Removido para evitar corte de conteúdo */
 }
+
+.table td {
+    white-space: normal;      /* Permite que o texto quebre em várias linhas */
+    word-wrap: break-word;    /* Quebra palavras longas */
+    overflow-wrap: break-word;/* Nova sintaxe para quebra de palavras */
+}
+
 .table thead th {
     background-color: #000000;
     color: #ffffff;
@@ -68,24 +81,37 @@ body {
     border-bottom: 2px solid #ff0000;
     font-size: 1.4rem;
 }
+
 .table tbody td {
     padding: 12px;
     color: #333333;
     font-size: 1.4rem;
 }
+
 /* Linhas listradas em #f9f9f9 */
 .table-striped tbody tr:nth-of-type(odd) {
     background-color: #f9f9f9;
 }
 
-/* Força os botões e formulários dentro das células da tabela a ficarem lado a lado */
+/* Garante que se houver "zoom" ou "scale" no hover, não haja corte do conteúdo */
+.table-striped tbody tr:hover {
+    overflow: visible !important;
+    position: relative;
+    /* Se desejar um leve zoom:
+       transform: scale(1.02);
+       transition: transform 0.2s ease;
+    */
+}
+
+/* Força botões e formulários dentro das células a ficarem lado a lado
+   (removemos white-space: nowrap; para permitir quebra de linha se necessário). */
 .table td a.btn,
 .table td form {
     display: inline-block;
     vertical-align: middle;
-    white-space: nowrap;
     margin-right: 5px;
 }
+
 
 /* =========================
    Buttons Styling
@@ -333,7 +359,7 @@ body {
     color: #ffffff;            /* Texto branco */
     border-bottom: 5px solid #ff0000; /* Borda inferior vermelha */
 }
-/* Aumenta a fonte do card-body do recibo para 1.3rem (ajuste conforme desejar) */
+/* Aumenta a fonte do card-body do recibo para 1.6rem */
 .card-body.recibo-body {
     font-size: 1.6rem; 
 }
